@@ -1,4 +1,8 @@
-const { ApolloError } = require('apollo-server-express');
+const {
+	ApolloError,
+	AuthenticationError,
+	ForbiddenError,
+} = require('apollo-server-express');
 const bcrypt = require('bcryptjs');
 
 const createToken = require('./utils/createToken');
@@ -29,6 +33,29 @@ const resolvers = {
 			} catch (error) {
 				throw new ApolloError(error);
 			}
+		},
+		getNote: async (parent, { id }, { Note, currentUser }) => {
+			if (!currentUser) {
+				throw new AuthenticationError(
+					'You must be logged in to perform this action!'
+				);
+			}
+			const note = await Note.findOne({ _id: id });
+			if (note.userId.toString() !== currentUser._id.toString()) {
+				throw new ForbiddenError('Unauthorized for this action!');
+			}
+			return note;
+		},
+		getAllNotes: async (parent, args, { Note, currentUser }) => {
+			if (!currentUser) {
+				throw new AuthenticationError(
+					'You must be logged in to perform this action!'
+				);
+			}
+			const notes = await Note.find({ userId: currentUser._id }).sort({
+				createdDate: 'desc',
+			});
+			return notes;
 		},
 	},
 	Mutation: {
@@ -65,6 +92,51 @@ const resolvers = {
 				return { token, errors };
 			} catch (error) {
 				throw new ApolloError(error);
+			}
+		},
+		// **************************************************************************** NOTES *************************************************************************
+		// PROTECTED
+		createOrUpdateNote: async (
+			parent,
+			{ title, tags, content, id },
+			{ Note, currentUser }
+		) => {
+			const errors = [];
+			if (!currentUser) {
+				throw new AuthenticationError(
+					'You must be logged in to perform this action!'
+				);
+			}
+			if (title === '')
+				createError(errors, 'title', 'Enter a title for your note');
+			if (errors.length) return { note: null, errors };
+
+			const filteredContent = content
+				.replace(/<\/?[^>]+(>|$)/g, '')
+				.replace(/&nbsp;/g, ''); // removing HTML tags from string for clean excerpt. &nbsp; check for notes with empty spaces only
+			let excerpt = filteredContent.slice(0, 100);
+			if (filteredContent.length > 100) excerpt += '...';
+
+			if (!id) {
+				// CREATE
+				console.log('creating...');
+				const newNote = await new Note({
+					title,
+					tags,
+					content,
+					excerpt,
+					userId: currentUser._id,
+				}).save();
+				return { note: newNote, errors };
+			} else {
+				// UPDATE
+				console.log('updating...');
+				const note = await Note.findOne({ _id: id });
+				note.title = title;
+				note.tags = tags || [];
+				note.content = content;
+				await note.save();
+				return { note, errors };
 			}
 		},
 	},
