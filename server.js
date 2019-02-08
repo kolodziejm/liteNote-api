@@ -2,7 +2,7 @@ require('dotenv').config({ path: 'variables.env' });
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const { ApolloServer } = require('apollo-server-express');
+const { ApolloServer, AuthenticationError } = require('apollo-server-express');
 
 const typeDefs = require('./schema');
 const resolvers = require('./resolvers');
@@ -24,6 +24,7 @@ const server = new ApolloServer({
 			const token = bearerToken.split(' ')[1];
 			const decoded = jwt.verify(token, process.env.SECRET);
 			currentUser = await User.findOne({ _id: decoded.id });
+			if (!currentUser) throw new AuthenticationError('Invalid JWT provided');
 		}
 
 		return { User, Note, currentUser };

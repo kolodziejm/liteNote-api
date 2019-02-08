@@ -42,6 +42,7 @@ const typeDefs = `
   type Mutation {
     register (username: String!, password: String!, passwordConfirm: String!): Token
     createOrUpdateNote(title: String!, tags: [String], content: String, id: ID): NoteWithError
+    deleteNote(id: ID!): Boolean!
   }
 `;
 
