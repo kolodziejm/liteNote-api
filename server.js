@@ -19,7 +19,8 @@ const server = new ApolloServer({
 	resolvers,
 	context: async ({ req }) => {
 		let currentUser = null;
-		const bearerToken = req.headers.authorization;
+		let bearerToken = req.headers.authorization;
+		if (!/Bearer /gim.test(bearerToken)) bearerToken = null;
 		if (bearerToken) {
 			const token = bearerToken.split(' ')[1];
 			const decoded = jwt.verify(token, process.env.SECRET);
