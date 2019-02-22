@@ -34,6 +34,7 @@ const resolvers = {
 				throw new ApolloError(error);
 			}
 		},
+
 		getNote: async (parent, { id }, { Note, currentUser }) => {
 			if (!currentUser) {
 				throw new AuthenticationError(
@@ -46,6 +47,7 @@ const resolvers = {
 			}
 			return note;
 		},
+
 		getAllNotes: async (parent, args, { Note, currentUser }) => {
 			if (!currentUser) {
 				throw new AuthenticationError(
@@ -68,6 +70,13 @@ const resolvers = {
 				const errors = [];
 				let token = null;
 				const userExistence = await User.findOne({ username });
+				if (username.length < 3) {
+					createError(
+						errors,
+						'username',
+						'Username has to be at least 3 characters long'
+					);
+				}
 				if (userExistence)
 					createError(
 						errors,
@@ -78,7 +87,7 @@ const resolvers = {
 					createError(
 						errors,
 						'password',
-						'Password has to be at least five characters long'
+						'Password has to be at least 5 characters long'
 					);
 				if (password !== passwordConfirm)
 					createError(errors, 'passwordConfirm', 'Passwords don\'t match');
@@ -146,6 +155,7 @@ const resolvers = {
 				throw new ApolloError(error);
 			}
 		},
+
 		deleteNote: async (parent, { id }, { Note, currentUser }) => {
 			if (!currentUser) {
 				throw new AuthenticationError(
