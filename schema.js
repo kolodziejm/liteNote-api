@@ -16,11 +16,16 @@ const typeDefs = `
     username: String!
     password: String!
   }
+  
+  type Tag {
+    id: ID!
+    tagName: String!
+  }
 
   type Note {
     _id: ID
     title: String
-    tags: [String]
+    tags: [Tag]
     content: String
     excerpt: String
     userId: ID
