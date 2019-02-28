@@ -18,7 +18,7 @@ const typeDefs = `
   }
   
   type Tag {
-    id: ID!
+    _id: ID!
     tagName: String!
   }
 
