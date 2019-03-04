@@ -18,9 +18,14 @@ const typeDefs = `
   }
   
   type Tag {
-    _id: ID!
+    id: ID!
     tagName: String!
   }
+
+  input TagInput {
+    id: ID!
+    tagName: String!
+  }  
 
   type Note {
     _id: ID
@@ -46,7 +51,7 @@ const typeDefs = `
 
   type Mutation {
     register (username: String!, password: String!, passwordConfirm: String!): Token
-    createOrUpdateNote(title: String!, tags: [String], content: String, id: ID): NoteWithError
+    createOrUpdateNote(title: String!, tags: [TagInput], content: String, id: ID): NoteWithError
     deleteNote(id: ID!): Boolean!
   }
 `;

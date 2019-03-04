@@ -127,7 +127,7 @@ const resolvers = {
 				let excerpt = filteredContent.slice(0, 125);
 				if (filteredContent.length > 125) excerpt += '...';
 
-				// ITERATE OVER GIVEN TAGS. CREATE OBJECT WITH UNIQUE ID AND TAG NAME, APPEND IT TO ARRAY, SET THE ARRAY OF TAG OBJECTS ONTO THE NOTE
+				// SET THE PROVIDED TAGS OBJECTS ARRAY (id with uniqid from the client, name) ONTO THE NOTE IN MONGODB
 
 				if (!id) {
 					// CREATE
