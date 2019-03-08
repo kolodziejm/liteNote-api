@@ -123,7 +123,7 @@ const resolvers = {
 
 				const filteredContent = content
 					.replace(/<\/?[^>]+(>|$)/g, '')
-					.replace(/&nbsp;/g, ''); // removing HTML tags from string for clean excerpt. &nbsp; check for notes with empty spaces only
+					.replace(/&nbsp;/g, ' '); // removing HTML tags from string for clean excerpt. &nbsp; check for notes with empty spaces only
 				let excerpt = filteredContent.slice(0, 125);
 				if (filteredContent.length > 125) excerpt += '...';
 
