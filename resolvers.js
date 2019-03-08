@@ -119,6 +119,17 @@ const resolvers = {
 				}
 				if (title === '')
 					createError(errors, 'title', 'Enter a title for your note');
+
+				if (tags) {
+					const tagNamesCorrect = tags.every(tag => tag.tagName.length <= 30);
+					if (!tagNamesCorrect)
+						createError(
+							errors,
+							'tagName',
+							'Enter a tag name that is below 30 characters'
+						);
+				} else tags = [];
+
 				if (errors.length) return { note: null, errors };
 
 				const filteredContent = content
@@ -126,8 +137,6 @@ const resolvers = {
 					.replace(/&nbsp;/g, ' '); // removing HTML tags from string for clean excerpt. &nbsp; check for notes with empty spaces only
 				let excerpt = filteredContent.slice(0, 125);
 				if (filteredContent.length > 125) excerpt += '...';
-
-				// SET THE PROVIDED TAGS OBJECTS ARRAY (id with uniqid from the client, name) ONTO THE NOTE IN MONGODB
 
 				if (!id) {
 					// CREATE
@@ -148,7 +157,7 @@ const resolvers = {
 						throw new ForbiddenError('Unauthorized for this action!');
 					}
 					note.title = title;
-					note.tags = tags || [];
+					note.tags = tags;
 					note.content = content;
 					await note.save();
 					return { note, errors };
