@@ -159,6 +159,7 @@ const resolvers = {
 					note.title = title;
 					note.tags = tags;
 					note.content = content;
+					note.excerpt = excerpt;
 					await note.save();
 					return { note, errors };
 				}
