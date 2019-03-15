@@ -120,6 +120,13 @@ const resolvers = {
 				if (title === '')
 					createError(errors, 'title', 'Enter a title for your note');
 
+				if (title.length > 120)
+					createError(
+						errors,
+						'title',
+						'Title\'s length has to be at most 120 characters'
+					);
+
 				if (tags) {
 					const tagNamesCorrect = tags.every(tag => tag.tagName.length <= 30);
 					if (!tagNamesCorrect)
@@ -128,6 +135,10 @@ const resolvers = {
 							'tagName',
 							'Enter a tag name that is below 30 characters'
 						);
+
+					if (tags.length > 6) {
+						createError(errors, 'tagName', 'Note can have a maximum of 6 tags');
+					}
 				} else tags = [];
 
 				if (errors.length) return { note: null, errors };
