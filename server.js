@@ -12,6 +12,11 @@ const Note = require('./models/Note');
 
 const PORT = process.env.PORT || 4000;
 
+const corsConfig = {
+	origin: 'https://litenote.ga',
+	credentials: true,
+};
+
 const app = express();
 
 const server = new ApolloServer({
@@ -31,7 +36,7 @@ const server = new ApolloServer({
 		return { User, Note, currentUser };
 	},
 });
-server.applyMiddleware({ app });
+server.applyMiddleware({ app, cors: corsConfig });
 
 app.listen({ port: PORT }, () => {
 	mongoose
